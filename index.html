@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digital Time Capsule</title>
+</head>
+<body>
+
+<h1>Digital Time Capsule</h1>
+
+<h2>Create Capsule</h2>
+<input type="text" id="message" placeholder="Enter your message">
+<input type="datetime-local" id="date">
+<button onclick="createCapsule()">Create</button>
+
+<h2>Open Capsule</h2>
+<input type="text" id="capsuleId" placeholder="Enter Capsule ID">
+<button onclick="openCapsule()">Open</button>
+
+<p id="result"></p>
+
+<script>
+async function createCapsule() {
+    const message = document.getElementById("message").value;
+    const openDate = document.getElementById("date").value;
+
+    const response = await fetch("http://localhost:3000/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message, openDate })
+    });
+
+    const data = await response.json();
+
+    if (data.id) {
+        document.getElementById("result").innerText =
+            "Capsule Created! Your ID: " + data.id;
+    } else {
+        document.getElementById("result").innerText = "Error creating capsule";
+    }
+}
+
+async function openCapsule() {
+    const id = document.getElementById("capsuleId").value;
+
+    const response = await fetch("http://localhost:3000/open/" + id);
+    const data = await response.json();
+
+    if (data.error) {
+        document.getElementById("result").innerText = data.error;
+    } else {
+        document.getElementById("result").innerText =
+            "Message: " + data.message;
+    }
+}
+</script>
+
+</body>
+</html>
